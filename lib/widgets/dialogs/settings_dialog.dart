@@ -195,7 +195,8 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   },
                       _radius.toStringAsFixed(2),
                       FilteringTextInputFormatter.allow(
-                          RegExp(r'(^\d*\.?\d*)')))
+                          RegExp(r'(^\d*\.?\d*)'))),
+                  const SizedBox(height: 8),
                 ],
               ),
             Column(
