@@ -183,6 +183,25 @@ class Trajectory {
         states[i].velocityMetersPerSecond =
             min(maxVCurve, states[i].velocityMetersPerSecond);
       }
+
+      num deltaPos = states[i].deltaPos;
+      num deltaAngle;
+
+      if(i == states.length - 1) {
+        deltaAngle = states[i].holonomicRotation - states[i-1].holonomicRotation;
+      }
+      else {
+        deltaAngle = states[i+1].holonomicRotation - states[i].holonomicRotation;
+      }
+      deltaAngle = GeometryUtil.toRadians(deltaAngle);
+      deltaAngle = MathUtil.inputModulus(deltaAngle, -pi,pi);
+
+      num robotRadius = 4;
+      if(deltaAngle != 0) {
+      num maxVRot = (maxVel * deltaPos)/(deltaAngle.abs()*robotRadius + deltaPos); // Vmax = dAngle/dt+dPos/dt, V=dPos/dt -> v=Vmax*(dPos/[dPos+dAngle])
+      states[i].velocityMetersPerSecond =
+            min(maxVRot, states[i].velocityMetersPerSecond);
+      }
     }
   }
 
