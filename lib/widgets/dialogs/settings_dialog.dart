@@ -43,10 +43,12 @@ class _SettingsDialogState extends State<SettingsDialog> {
   late bool _generateJSON;
   late bool _generateCSV;
   late bool _pplibClient;
+  late bool _considerAngVel;
   late FieldImage _selectedField;
   late Color _teamColor;
   late String _pplibClientHost;
   late int _pplibClientPort;
+  late double _radius;
 
   @override
   void initState() {
@@ -59,11 +61,13 @@ class _SettingsDialogState extends State<SettingsDialog> {
     _generateJSON = widget.prefs.getBool('generateJSON') ?? false;
     _generateCSV = widget.prefs.getBool('generateCSV') ?? false;
     _pplibClient = widget.prefs.getBool('pplibClient') ?? false;
+    _considerAngVel = widget.prefs.getBool('considerAngVel') ?? false;
     _selectedField = widget.selectedField;
     _teamColor = Color(widget.prefs.getInt('teamColor') ?? Colors.indigo.value);
     _pplibClientHost =
         widget.prefs.getString('pplibClientHost') ?? '10.30.15.2';
     _pplibClientPort = widget.prefs.getInt('pplibClientPort') ?? 5811;
+    _radius = widget.prefs.getDouble('robotMaxRadius') ?? 1.00;
   }
 
   @override
@@ -345,6 +349,30 @@ class _SettingsDialogState extends State<SettingsDialog> {
                         widget.prefs.setBool('pplibClient', enable);
                         setState(() {
                           _pplibClient = enable;
+                        });
+                        widget.onSettingsChanged();
+                      },
+                    ),
+                    FilterChip(
+                      label: const Text('normalize angular velocity'),
+                      labelStyle: TextStyle(
+                          color: _considerAngVel
+                              ? colorScheme.onPrimaryContainer
+                              : colorScheme.onSurface),
+                      selected: _considerAngVel,
+                      backgroundColor: colorScheme.surface,
+                      selectedColor: colorScheme.primaryContainer,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(
+                              color: _considerAngVel
+                                  ? colorScheme.primaryContainer
+                                  : colorScheme.outline,
+                              width: 1)),
+                      onSelected: (value) {
+                        widget.prefs.setBool('considerAngVel', value);
+                        setState(() {
+                          _considerAngVel = value;
                         });
                         widget.onSettingsChanged();
                       },
