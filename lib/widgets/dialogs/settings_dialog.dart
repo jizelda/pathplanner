@@ -176,6 +176,28 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   const SizedBox(height: 8),
                 ],
               ),
+            if (_considerAngVel)
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('max distance of wheel to center'),
+                  const SizedBox(height: 4),
+                  _buildTextField(context, 'radius', (value) {
+                    double? val = double.tryParse(value);
+                    if (val != null) {
+                      widget.prefs.setDouble('considerAngVel', val);
+                      setState(() {
+                        _radius = val;
+                      });
+                      widget.onSettingsChanged();
+                    }
+                  },
+                      _radius.toStringAsFixed(2),
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'(^\d*\.?\d*)')))
+                ],
+              ),
             Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
