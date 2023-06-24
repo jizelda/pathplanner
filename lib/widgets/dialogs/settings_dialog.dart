@@ -61,7 +61,8 @@ class _SettingsDialogState extends State<SettingsDialog> {
     _generateJSON = widget.prefs.getBool('generateJSON') ?? false;
     _generateCSV = widget.prefs.getBool('generateCSV') ?? false;
     _pplibClient = widget.prefs.getBool('pplibClient') ?? false;
-    _considerAngVel = widget.prefs.getBool('considerAngVel') ?? false;
+    //todo: 'considerAngVel' doesn't work. find why!
+    _considerAngVel = widget.prefs.getBool('consider') ?? false;
     _selectedField = widget.selectedField;
     _teamColor = Color(widget.prefs.getInt('teamColor') ?? Colors.indigo.value);
     _pplibClientHost =
@@ -370,7 +371,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                                   : colorScheme.outline,
                               width: 1)),
                       onSelected: (value) {
-                        widget.prefs.setBool('considerAngVel', value);
+                        widget.prefs.setBool('consider', value);
                         setState(() {
                           _considerAngVel = value;
                         });
