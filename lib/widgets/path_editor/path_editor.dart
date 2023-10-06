@@ -32,6 +32,7 @@ class PathEditor extends StatefulWidget {
   final bool showGeneratorSettings;
   final void Function(RobotPath path) savePath;
   final SharedPreferences prefs;
+  final bool consider;
 
   const PathEditor(
       {required this.fieldImage,
@@ -42,6 +43,7 @@ class PathEditor extends StatefulWidget {
       this.focusedSelection = false,
       required this.savePath,
       required this.prefs,
+      required this.consider,
       super.key});
 
   @override
@@ -155,6 +157,7 @@ class _PathEditorState extends State<PathEditor> {
           savePath: widget.savePath,
           prefs: widget.prefs,
           key: ValueKey(widget.path),
+          consider: widget.consider,
         );
     }
   }

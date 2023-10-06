@@ -62,10 +62,15 @@ class Trajectory {
 
     List<Trajectory> trajectories = [];
     bool shouldReverse = path.isReversed ?? false;
+    bool considerAngVel = path.considerAngVel ?? false;
     for (int i = 0; i < splitPaths.length; i++) {
       List<Waypoint> splitPath = splitPaths[i];
       trajectories.add(await generateSingleTrajectory(
-          splitPath, path.maxVelocity, path.maxAcceleration, shouldReverse));
+          splitPath,
+          path.maxVelocity,
+          path.maxAcceleration,
+          shouldReverse,
+          considerAngVel));
 
       if (splitPath[splitPath.length - 1].isReversal) {
         shouldReverse = !shouldReverse;
@@ -80,10 +85,11 @@ class Trajectory {
   }
 
   static Future<Trajectory> generateSingleTrajectory(List<Waypoint> pathPoints,
-      num? maxVel, num? maxAccel, bool reversed) async {
+      num? maxVel, num? maxAccel, bool reversed, bool considerAngVel) async {
     List<TrajectoryState> joined =
         joinSplines(pathPoints, maxVel ?? 4.0, Trajectory.resolution);
-    calculateMaxVel(joined, maxVel ?? 4.0, maxAccel ?? 3.0, reversed);
+    calculateMaxVel(
+        joined, maxVel ?? 4.0, maxAccel ?? 3.0, reversed, considerAngVel);
     calculateVelocity(joined, pathPoints, maxAccel ?? 3.0);
     recalculateValues(joined, reversed);
 
@@ -158,8 +164,8 @@ class Trajectory {
     return length;
   }
 
-  static void calculateMaxVel(
-      List<TrajectoryState> states, num maxVel, num maxAccel, bool reversed) {
+  static void calculateMaxVel(List<TrajectoryState> states, num maxVel,
+      num maxAccel, bool reversed, bool considerAngVel) {
     for (int i = 0; i < states.length; i++) {
       num radius;
       if (i == states.length - 1) {
@@ -184,26 +190,28 @@ class Trajectory {
             min(maxVCurve, states[i].velocityMetersPerSecond);
       }
 
-      num deltaPos = states[i].deltaPos;
-      num deltaAngle;
+      if (considerAngVel) {
+        num deltaPos = states[i].deltaPos;
+        num deltaAngle;
 
-      if (i == states.length - 1) {
-        deltaAngle =
-            states[i].holonomicRotation - states[i - 1].holonomicRotation;
-      } else {
-        deltaAngle =
-            states[i + 1].holonomicRotation - states[i].holonomicRotation;
-      }
-      deltaAngle = GeometryUtil.toRadians(deltaAngle);
-      deltaAngle = MathUtil.inputModulus(deltaAngle, -pi, pi);
+        if (i == states.length - 1) {
+          deltaAngle =
+              states[i].holonomicRotation - states[i - 1].holonomicRotation;
+        } else {
+          deltaAngle =
+              states[i + 1].holonomicRotation - states[i].holonomicRotation;
+        }
+        deltaAngle = GeometryUtil.toRadians(deltaAngle);
+        deltaAngle = MathUtil.inputModulus(deltaAngle, -pi, pi);
 
-      num robotRadius = 4;
-      if (deltaAngle != 0) {
-        num maxVRot = (maxVel * deltaPos) /
-            (deltaAngle.abs() * robotRadius +
-                deltaPos); // Vmax = dAngle/dt+dPos/dt, V=dPos/dt -> v=Vmax*(dPos/[dPos+dAngle])
-        states[i].velocityMetersPerSecond =
-            min(maxVRot, states[i].velocityMetersPerSecond);
+        num robotRadius = 4;
+        if (deltaAngle != 0) {
+          num maxVRot = (maxVel * deltaPos) /
+              (deltaAngle.abs() * robotRadius +
+                  deltaPos); // Vmax = dAngle/dt+dPos/dt, V=dPos/dt -> v=Vmax*(dPos/[dPos+dAngle])
+          states[i].velocityMetersPerSecond =
+              min(maxVRot, states[i].velocityMetersPerSecond);
+        }
       }
     }
   }

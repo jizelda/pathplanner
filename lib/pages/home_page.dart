@@ -51,6 +51,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   bool _generateJSON = false;
   bool _generateCSV = false;
   bool _pplibClient = false;
+  bool _consider = false;
   bool _isWpiLib = false;
   final SecureBookmarks? _bookmarks =
       Platform.isMacOS ? SecureBookmarks() : null;
@@ -503,6 +504,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               focusedSelection: _focusedSelection,
               savePath: (path) => _savePath(path),
               prefs: widget.prefs,
+              consider: _consider,
             ),
           ),
           Align(
@@ -638,6 +640,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       _generateJSON = widget.prefs.getBool('generateJSON') ?? false;
       _generateCSV = widget.prefs.getBool('generateCSV') ?? false;
       _pplibClient = widget.prefs.getBool('pplibClient') ?? false;
+      _consider = widget.prefs.getBool('consider') ?? false;
 
       if (_pplibClient) {
         PPLibClient.initialize(widget.prefs);

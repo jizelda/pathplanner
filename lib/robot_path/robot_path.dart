@@ -16,6 +16,7 @@ class RobotPath {
   num? maxVelocity;
   num? maxAcceleration;
   bool? isReversed;
+  bool? considerAngVel;
   late String name;
   late Trajectory generatedTrajectory;
   List<EventMarker> markers;
@@ -26,6 +27,7 @@ class RobotPath {
       this.maxVelocity,
       this.maxAcceleration,
       this.isReversed,
+      this.considerAngVel,
       this.markers = const []});
 
   RobotPath.defaultPath(

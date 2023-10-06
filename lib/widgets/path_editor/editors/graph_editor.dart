@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class GraphEditor extends StatefulWidget {
   final RobotPath path;
   final bool holonomicMode;
+  final bool consider;
   final void Function(RobotPath path) savePath;
   final SharedPreferences prefs;
   static String prefShowVelocity = 'graphShowVelocity';
@@ -30,6 +31,7 @@ class GraphEditor extends StatefulWidget {
       required this.holonomicMode,
       required this.savePath,
       required this.prefs,
+      required this.consider,
       super.key});
 
   @override
